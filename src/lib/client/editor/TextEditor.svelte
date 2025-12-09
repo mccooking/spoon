@@ -1,57 +1,16 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { BlockNoteEditor } from "@blocknote/core";
-	import "@blocknote/core/fonts/inter.css";
 	import SuggestionMenu from "./plugins/SuggestionMenu.svelte";
-	import {
-		BlockNoteSchema,
-		defaultInlineContentSpecs,
-		createInlineContentSpec
-	} from "@blocknote/core";
+	import { schema } from "./schema";
+	import type { TextEditor } from "./types";
 
-	// Create custom schema with slashCommand inline content
-	const slashCommandSpec = createInlineContentSpec(
-		{
-			type: "slashCommand" as const,
-			propSchema: {
-				text: {
-					default: "/"
-				}
-			},
-			content: "styled"
-		},
-		{
-			render: (inlineContent) => {
-				const span = document.createElement("span");
-				span.className =
-					"slash-command bg-bg-secondary px-1.5 py-1 rounded-sm border border-border";
-				span.setAttribute("contenteditable", "true");
-				span.textContent = inlineContent.props.text;
-
-				return {
-					dom: span,
-					contentDOM: span
-				};
-			}
-		}
-	);
-
-	const schema = BlockNoteSchema.create({
-		inlineContentSpecs: {
-			...defaultInlineContentSpecs,
-			slashCommand: slashCommandSpec
-		}
-	});
-
-	let editor: null | BlockNoteEditor<any, any, any> = null;
+	let editor: TextEditor | null = null;
 	let editorElement: HTMLDivElement | null = null;
 
 	onMount(() => {
 		editor = BlockNoteEditor.create({ schema });
-
-		if (editorElement) {
-			editor.mount(editorElement);
-		}
+		editor.mount(editorElement!);
 	});
 </script>
 
