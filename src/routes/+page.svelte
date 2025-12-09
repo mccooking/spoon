@@ -1,1 +1,5 @@
-<h1>Hello, world!</h1>
+<script>
+	import TextEditor from "../lib/client/editor/TextEditor.svelte";
+</script>
+
+<TextEditor />
