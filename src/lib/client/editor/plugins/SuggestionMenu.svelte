@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { BlockNoteEditor } from "@blocknote/core";
-	import "@blocknote/core/fonts/inter.css";
-	import SuggestionMenu from "./plugins/SuggestionMenu.svelte";
+	import type { BlockNoteEditor } from "@blocknote/core";
 	import {
 		BlockNoteSchema,
 		defaultInlineContentSpecs,
 		createInlineContentSpec
 	} from "@blocknote/core";
 
-	// Create custom schema with slashCommand inline content
+	export let editor: BlockNoteEditor<any, any, any>;
+
 	const slashCommandSpec = createInlineContentSpec(
 		{
 			type: "slashCommand" as const,
@@ -43,20 +42,31 @@
 		}
 	});
 
-	let editor: null | BlockNoteEditor<any, any, any> = null;
-	let editorElement: HTMLDivElement | null = null;
-
 	onMount(() => {
-		editor = BlockNoteEditor.create({ schema });
+		(editor as any)._tiptapEditor.schema = schema;
 
-		if (editorElement) {
-			editor.mount(editorElement);
-		}
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "/" && editor) {
+				event.preventDefault();
+
+				editor.insertInlineContent([
+					{
+						type: "slashCommand",
+						props: {
+							text: "/"
+						}
+					}
+				]);
+
+				return true;
+			}
+		};
+
+		const editorElement = (editor as any)._tiptapEditor.view.dom;
+		editorElement.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			editorElement.removeEventListener("keydown", handleKeyDown);
+		};
 	});
 </script>
-
-{#if editor}
-	<SuggestionMenu {editor} />
-{/if}
-
-<div class="outline-none min-h-screen px-16 py-8" bind:this={editorElement}></div>

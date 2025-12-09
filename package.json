@@ -44,6 +44,8 @@
 		"vitest-browser-svelte": "^2.0.1"
 	},
 	"dependencies": {
-		"@blocknote/core": "^0.44.1"
+		"@blocknote/core": "^0.44.1",
+		"prosemirror-state": "^1.4.4",
+		"prosemirror-view": "^1.41.4"
 	}
 }
